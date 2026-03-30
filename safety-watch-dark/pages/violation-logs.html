@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafteyWatch – Violation Logs</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style-dark.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+
+  <nav>
+    <a href="../safetywatch.html" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      SafteyWatch
+    </a>
+    <ul class="nav-links">
+      <li><a href="safetywatch-dashboard.html">Dashboard</a></li>
+      <li><a href="employees.html">Employees</a></li>
+      <li><a href="attendance-logs-admin.html">Attendance</a></li>
+      <li><a href="#" class="active">Violations</a></li>
+      <li><a href="security-alerts.html">Alerts</a></li>
+      <li><a href="camera-management.html">Cameras</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+        <svg class="icon-sun" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <span class="nav-welcome">Welcome, <strong>Ahmed Hassan</strong></span>
+      <button class="btn-logout">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <div class="page-title">
+        <h1>Violation Logs</h1>
+        <p>Monitor security violations and incidents</p>
+      </div>
+      <div class="page-actions">
+        <div class="filter-group">
+          <select id="cameraFilter" class="btn btn-outline" style="padding: 8px 12px; cursor: pointer;">
+            <option value="">All Cameras</option>
+            <option value="Camera 1">Camera 1</option>
+            <option value="Camera 2">Camera 2</option>
+            <option value="Camera 3">Camera 3</option>
+            <option value="Camera 4">Camera 4</option>
+            <option value="Camera 5">Camera 5</option>
+            <option value="Camera 6">Camera 6</option>
+            <option value="Camera 7">Camera 7</option>
+            <option value="Camera 8">Camera 8</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="exportToExcel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export Report
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value red">8</div>
+        <div class="stat-label">Total Violations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value orange">3</div>
+        <div class="stat-label">High Severity</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value blue">2</div>
+        <div class="stat-label">Under Investigation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green">6</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Employee</th>
+            <th>Timestamp</th>
+            <th>Severity</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Violence Detected</div></td>
+            <td>Camera 3 - Warehouse</td>
+            <td>Unknown</td>
+            <td class="mono">2026-02-01 14:35:22</td>
+            <td><span class="badge sev-high">High</span></td>
+            <td><span class="badge st-investigation">Under Investigation</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Restricted Area Access</div></td>
+            <td>Camera 8 - Server Room</td>
+            <td>Omar Ali</td>
+            <td class="mono">2026-02-01 11:20:15</td>
+            <td><span class="badge sev-medium">Medium</span></td>
+            <td><span class="badge st-resolved">Resolved</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Unusual Activity</div></td>
+            <td>Camera 7 - Parking Lot</td>
+            <td>Multiple</td>
+            <td class="mono">2026-02-01 09:45:30</td>
+            <td><span class="badge sev-low">Low</span></td>
+            <td><span class="badge st-resolved">Resolved</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Violence Detected</div></td>
+            <td>Camera 2 - Office Floor</td>
+            <td>Unknown</td>
+            <td class="mono">2026-01-31 16:10:45</td>
+            <td><span class="badge sev-high">High</span></td>
+            <td><span class="badge st-resolved">Resolved</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Safety Violation</div></td>
+            <td>Camera 5 - Production Area</td>
+            <td>Mohamed Khaled</td>
+            <td class="mono">2026-01-31 13:25:18</td>
+            <td><span class="badge sev-medium">Medium</span></td>
+            <td><span class="badge st-investigation">Under Investigation</span></td>
+          </tr>
+          <tr>
+            <td><div class="type-cell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Unauthorized Presence</div></td>
+            <td>Camera 4 - Storage</td>
+            <td>Unknown</td>
+            <td class="mono">2026-01-30 18:40:55</td>
+            <td><span class="badge sev-medium">Medium</span></td>
+            <td><span class="badge st-resolved">Resolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Camera filter functionality
+    document.getElementById('cameraFilter').addEventListener('change', function() {
+      const filter = this.value;
+      const rows = document.querySelectorAll('table tbody tr');
+
+      rows.forEach(row => {
+        const location = row.cells[1].textContent;
+        if (!filter || location.includes(filter)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    // Export to Excel - only exports visible (filtered) rows
+    function exportToExcel() {
+      const table = document.querySelector('table');
+      const filterVal = document.getElementById('cameraFilter').value;
+      const visibleRows = [];
+
+      // Get headers
+      const headers = [];
+      table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
+      visibleRows.push(headers);
+
+      // Get visible body rows
+      table.querySelectorAll('tbody tr').forEach(row => {
+        if (row.style.display !== 'none') {
+          const rowData = [];
+          row.querySelectorAll('td').forEach(td => {
+            // Get text content, stripping any nested spans/badges
+            let text = td.textContent.trim();
+            rowData.push(text);
+          });
+          visibleRows.push(rowData);
+        }
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(visibleRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Violation Logs");
+      XLSX.writeFile(wb, "violation-logs.xlsx");
+    }
+  </script>
+  <script>
+  function toggleTheme() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme');
+    var next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  }
+  </script>
+
+</body>
+</html>

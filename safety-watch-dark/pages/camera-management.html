@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafteyWatch – Camera Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+ <link rel="stylesheet" href="../css/style-dark.css">
+ <script>
+   (function() {
+     var t = localStorage.getItem('theme') || 'dark';
+     document.documentElement.setAttribute('data-theme', t);
+   })();
+ </script>
+</head>
+<body>
+
+  <nav>
+    <a href="../safetywatch.html" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      SafteyWatch
+    </a>
+    <ul class="nav-links">
+      <li><a href="safetywatch-dashboard.html">Dashboard</a></li>
+      <li><a href="employees.html">Employees</a></li>
+      <li><a href="attendance-logs-admin.html">Attendance</a></li>
+      <li><a href="violation-logs.html">Violations</a></li>
+      <li><a href="security-alerts.html">Alerts</a></li>
+      <li><a href="#" class="active">Cameras</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+        <svg class="icon-sun" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <span class="nav-welcome">Welcome, <strong>Ahmed Hassan</strong></span>
+      <button class="btn-logout">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Camera Management</h1>
+      <p>Monitor and manage all security cameras</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value dark">12</div>
+        <div class="stat-label">Total Cameras</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green">11</div>
+        <div class="stat-label">Online</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value red">1</div>
+        <div class="stat-label">Offline</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value dark">63</div>
+        <div class="stat-label">Total Alerts</div>
+      </div>
+    </div>
+
+    <div class="cameras-grid" id="cameraGrid"></div>
+  </main>
+
+  <script>
+    const cameras = [
+      { id: 1,  name: "Camera 1 - Main Entrance",   loc: "Building A - Entrance",  status: "live",    time: "Active now",   alerts: 12 },
+      { id: 2,  name: "Camera 2 - Office Floor",    loc: "Building A - Floor 2",   status: "live",    time: "Active now",   alerts: 5  },
+      { id: 3,  name: "Camera 3 - Warehouse",       loc: "Building B - Warehouse", status: "live",    time: "Active now",   alerts: 8  },
+      { id: 4,  name: "Camera 4 - Storage",         loc: "Building B - Storage",   status: "live",    time: "Active now",   alerts: 2  },
+      { id: 5,  name: "Camera 5 - Production Area", loc: "Building C - Production",status: "offline", time: "2 hours ago",  alerts: 0  },
+      { id: 6,  name: "Camera 6 - Lobby",           loc: "Building A - Lobby",     status: "live",    time: "Active now",   alerts: 3  },
+      { id: 7,  name: "Camera 7 - Parking Lot",     loc: "Outdoor - Parking",      status: "live",    time: "Active now",   alerts: 15 },
+      { id: 8,  name: "Camera 8 - Server Room",     loc: "Building A - Floor 3",   status: "live",    time: "Active now",   alerts: 4  },
+      { id: 9,  name: "Camera 9 - Cafeteria",       loc: "Building A - Floor 1",   status: "live",    time: "Active now",   alerts: 1  },
+      { id: 10, name: "Camera 10 - Loading Dock",   loc: "Building B - Dock",      status: "live",    time: "Active now",   alerts: 6  },
+      { id: 11, name: "Camera 11 - Emergency Exit", loc: "Building C - Exit",      status: "live",    time: "Active now",   alerts: 0  },
+      { id: 12, name: "Camera 12 - Reception",      loc: "Building A - Reception", status: "live",    time: "Active now",   alerts: 7  },
+    ];
+
+    const grid = document.getElementById("cameraGrid");
+
+    cameras.forEach(cam => {
+      const isLive = cam.status === "live";
+      grid.innerHTML += `
+        <div class="camera-card">
+          <div class="camera-feed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+            <div class="feed-badge ${isLive ? 'live' : 'offline'}">
+              <div class="dot"></div>
+              ${isLive ? 'LIVE' : 'OFFLINE'}
+            </div>
+          </div>
+          <div class="camera-info">
+            <div class="camera-name">${cam.name}</div>
+            <div class="camera-location">${cam.loc}</div>
+          </div>
+          <div class="camera-status-row">
+            <span class="status-time">${cam.time}</span>
+            <span class="alerts-count ${cam.alerts === 0 ? 'zero' : ''}">${cam.alerts} alerts</span>
+          </div>
+          <div class="camera-footer">
+            <button class="btn-settings">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              Settings
+            </button>
+          </div>
+        </div>`;
+    });
+  </script>
+  <script>
+  function toggleTheme() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme');
+    var next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  }
+  </script>
+
+</body>
+</html>
